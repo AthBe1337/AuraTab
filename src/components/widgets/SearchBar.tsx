@@ -1,19 +1,17 @@
-import { useState, type KeyboardEvent, useRef, useEffect } from 'react';
-import { SEARCH_ENGINES, type SearchEngine } from '../../utils/constants';
+import { useState, KeyboardEvent, useRef, useEffect } from 'react';
+import { SEARCH_ENGINES } from '../../utils/constants';
+import { useSettings } from '../../context/SettingsContext'; // 引入
 
 export const SearchBar = () => {
+  const { settings, updateSetting } = useSettings(); // 使用全局设置
   const [query, setQuery] = useState('');
-  // 默认使用 Google，key 对应 constants 里的键名
-  const [currentEngineKey, setCurrentEngineKey] = useState<string>('google');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const currentEngine = SEARCH_ENGINES[currentEngineKey];
+  const currentEngine = SEARCH_ENGINES[settings.searchEngine] || SEARCH_ENGINES['google'];
 
   const handleSearch = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && query.trim()) {
-      // 拼接 URL 并跳转
       window.location.href = `${currentEngine.url}${encodeURIComponent(query)}`;
     }
   };
@@ -55,11 +53,11 @@ export const SearchBar = () => {
                 <button
                   key={key}
                   onClick={() => {
-                    setCurrentEngineKey(key);
+                    updateSetting('searchEngine', key); // <--- 关键修改
                     setIsMenuOpen(false);
                   }}
                   className={`w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 flex items-center gap-3 transition-colors
-                    ${currentEngineKey === key ? 'bg-white/20' : ''}`}
+                    ${settings.searchEngine === key ? 'bg-white/20' : ''}`}
                 >
                   <span>{engine.icon}</span>
                   {engine.name}
@@ -76,7 +74,7 @@ export const SearchBar = () => {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleSearch}
           placeholder={`Search with ${currentEngine.name}...`}
-          className="flex-1 py-4 pr-8 bg-transparent text-white placeholder-white/60 text-xl border-none outline-none rounded-r-full font-light tracking-wide"
+          className="flex-1 py-4 pr-8 bg-transparent text-white placeholder-white/60 text-xl border-none outline-none rounded-r-full font-light tracking-wide relative z-10"
           autoFocus
         />
       </div>

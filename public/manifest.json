@@ -18,12 +18,11 @@
   },
   "permissions": [
     "storage", 
-    "bookmarks", 
-    "favicon",
     "geolocation"
   ],
   "host_permissions": [
-    "https://*/*", 
+    "https://icons.duckduckgo.com/ip3/*.ico", 
+    "https://www.google.com/s2/favicons?domain=*.com",
     "https://devapi.qweather.com/*",
     "https://geoapi.qweather.com/*"
   ]

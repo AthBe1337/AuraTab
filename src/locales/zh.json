@@ -1,0 +1,64 @@
+{
+  "weather": {
+    "unknown": "未知",
+    "setup": "配置天气密钥",
+    "locDenied": "定位被拒绝"
+  },
+  "settings": {
+    "title": "设置",
+    "background": "背景来源",
+    "builtin": "必应每日图片",
+    "custom": "自定义 URL",
+    "local": "本地图库",
+    "delete": "删除",
+    "tint": "滤镜色调",
+    "blur": "模糊度",
+    "dim": "暗度",
+    "clock": "时钟格式",
+      "12h": "12 小时制",
+      "24h": "24 小时制",
+    "font": "字体风格",
+      "modern": "现代",
+      "elegant": "优雅",
+      "code": "代码",
+    "search": "默认搜索引擎",
+      "google": "Google",
+      "bing": "Bing",
+      "duckduckgo": "DuckDuckGo",
+      "baidu": "百度",
+    "weather": "天气服务",
+    "weatherProvider": "数据由和风天气提供",
+    "upload": "上传",
+    "noImages": "尚未上传任何图片。",
+    "customUrl": "在此粘贴图片链接...",
+    "placeholderKey": "在此粘贴 Key...",
+    "placeholderHost": "在此粘贴 Host URL...",
+    "getKey": "获取免费 Key"
+  },
+  "quickLinks": {
+    "add": "添加",
+    "addTitle": "添加快捷方式",
+    "editTitle": "编辑快捷方式",
+    "titleLabel": "标题",
+    "urlLabel": "网址",
+    "cancel": "取消",
+    "save": "保存",
+    "edit": "编辑",
+    "delete": "删除"
+  },
+  "filters": {
+    "obsidian": "纯黑",
+    "midnight": "深岩蓝",
+    "violet": "深紫",
+    "forest": "深绿",
+    "ocean": "深海蓝",
+    "wine": "深酒红",
+    "chocolate": "深咖色"
+  },
+  "searchwith": {
+    "google": "使用 Google 搜索",
+    "bing": "使用 Bing 搜索",
+    "duckduckgo": "使用 DuckDuckGo 搜索",
+    "baidu": "使用 百度 搜索"
+  }
+}

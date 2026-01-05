@@ -1,0 +1,64 @@
+{
+  "weather": {
+    "unknown": "Unknown",
+    "setup": "Setup Weather Key",
+    "locDenied": "Location Denied"
+  },
+  "settings": {
+    "title": "Settings",
+    "background": "Background Source",
+    "builtin": "Bing Daily",
+    "custom": "Custom URL",
+    "local": "Local Gallery",
+    "delete": "Delete",
+    "tint": "Tint Filter",
+    "blur": "Blur",
+    "dim": "Dim",
+    "clock": "Clock Format",
+      "12h": "12-Hour",
+      "24h": "24-Hour",
+    "font": "Typography",
+      "modern": "Modern",
+      "elegant": "Elegant",
+      "code": "Code",
+    "search": "Default Search",
+      "google": "Google",
+      "bing": "Bing",
+      "duckduckgo": "DuckDuckGo",
+      "baidu": "Baidu",
+    "weather": "Weather Service",
+    "weatherProvider": "Data provided by QWeather (HeFeng)",
+    "upload": "Upload",
+    "noImages": "No images uploaded yet.",
+    "customUrl": "Paste image URL...",
+    "placeholderKey": "Paste your key here...",
+    "placeholderHost": "Paste your host URL here...",
+    "getKey": "Get Free Key"
+  },
+  "quickLinks": {
+    "add": "Add",
+    "addTitle": "Add Shortcut",
+    "editTitle": "Edit Shortcut",
+    "titleLabel": "Title",
+    "urlLabel": "URL",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "filters": {
+    "obsidian": "Obsidian",
+    "midnight": "Midnight",
+    "violet": "Nebula",
+    "forest": "Forest",
+    "ocean": "Abyss",
+    "wine": "Wine",
+    "chocolate": "Coffee"
+  },
+  "searchwith": {
+    "google": "Search with Google",
+    "bing": "Search with Bing",
+    "duckduckgo": "Search with DuckDuckGo",
+    "baidu": "Search with Baidu"
+  }
+}

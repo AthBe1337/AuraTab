@@ -20,6 +20,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useSettings } from '../../context/SettingsContext';
 import type { QuickLink } from '../../context/SettingsContext';
 import { Globe, MoreVertical, Edit2, Trash2 } from 'lucide-react'; // 新增图标
+import { useTranslation } from 'react-i18next'; // 引入 i18n
 
 // --- Favicon 组件 (保持不变) ---
 const FaviconImage = ({ url, title, className }: { url: string, title: string, className?: string }) => {
@@ -55,8 +56,8 @@ const FaviconImage = ({ url, title, className }: { url: string, title: string, c
 };
 
 const getIconSources = (domain: string) => [
-  `https://api.uomg.com/api/get.favicon?url=${domain}`,
-  `https://icons.duckduckgo.com/ip3/${domain}.ico` 
+  `https://icons.duckduckgo.com/ip3/${domain}.ico`,
+  `https://www.google.com/s2/favicons?domain=${domain}&sz=64`
 ];
 
 // --- 1. 子组件：可拖拽的单个链接 ---
@@ -67,6 +68,7 @@ interface SortableLinkProps {
 }
 
 const SortableLink = ({ link, onEdit, onDelete }: SortableLinkProps) => {
+  const { t, i18n } = useTranslation();
   const {
     attributes,
     listeners,
@@ -182,7 +184,7 @@ const SortableLink = ({ link, onEdit, onDelete }: SortableLinkProps) => {
                   }}
                   className="flex items-center gap-2 px-3 py-2 text-xs text-white/80 hover:bg-white/10 hover:text-white transition-colors text-left"
                 >
-                  <Edit2 size={12} /> Edit
+                  <Edit2 size={12} /> {t('quickLinks.edit') || 'Edit'}
                 </button>
                 <div className="h-[1px] bg-white/10 mx-1"></div>
                 <button
@@ -193,7 +195,7 @@ const SortableLink = ({ link, onEdit, onDelete }: SortableLinkProps) => {
                   }}
                   className="flex items-center gap-2 px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors text-left"
                 >
-                  <Trash2 size={12} /> Delete
+                  <Trash2 size={12} /> {t('quickLinks.delete') || 'Delete'}
                 </button>
               </div>
             )}
@@ -214,6 +216,7 @@ const SortableLink = ({ link, onEdit, onDelete }: SortableLinkProps) => {
 
 // --- 2. 主组件 ---
 export const QuickLinks = () => {
+  const {t, i18n } = useTranslation();
   const { settings, updateSetting } = useSettings();
   
   // 模态框状态管理
@@ -347,7 +350,7 @@ export const QuickLinks = () => {
             <span className="text-xs text-white/80 font-medium truncate max-w-full 
                              drop-shadow-md select-none mt-1 px-2 py-0.5 rounded-md 
                              bg-black/0 group-hover:bg-black/30 transition-colors duration-300">
-              Add
+              {t('quickLinks.add') || 'Add Link'}
             </span>
           </button>
         </div>
@@ -364,13 +367,13 @@ export const QuickLinks = () => {
              onClick={e => e.stopPropagation()}
            >
             <h3 className="text-white font-bold mb-4">
-              {modalState.mode === 'add' ? 'Add Shortcut' : 'Edit Shortcut'}
+              {modalState.mode === 'add' ? t('quickLinks.addTitle') || 'Add Shortcut' : t('quickLinks.editTitle') || 'Edit Shortcut'}
             </h3>
             <form onSubmit={handleSave} className="space-y-3">
               <div>
                 <input
                   type="text"
-                  placeholder="Title"
+                  placeholder={t('quickLinks.titleLabel') || 'Title'}
                   value={titleInput}
                   onChange={e => setTitleInput(e.target.value)}
                   className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-white/30 focus:border-white/40 outline-none text-sm"
@@ -380,7 +383,7 @@ export const QuickLinks = () => {
               <div>
                 <input
                   type="text"
-                  placeholder="URL"
+                  placeholder={t('quickLinks.urlLabel') || 'URL'}
                   value={urlInput}
                   onChange={e => setUrlInput(e.target.value)}
                   className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-white/30 focus:border-white/40 outline-none text-sm"
@@ -392,13 +395,13 @@ export const QuickLinks = () => {
                   onClick={() => setModalState({ ...modalState, isOpen: false })} 
                   className="flex-1 py-2 text-xs text-white/60 hover:bg-white/5 rounded-lg"
                 >
-                  Cancel
+                  {t('quickLinks.cancel') || 'Cancel'}
                 </button>
                 <button 
                   type="submit" 
                   className="flex-1 py-2 text-xs bg-white text-black font-bold rounded-lg hover:bg-gray-200"
                 >
-                  {modalState.mode === 'add' ? 'Add' : 'Save'}
+                  {modalState.mode === 'add' ? t('quickLinks.add') || 'Add' : t('quickLinks.save') || 'Save'}
                 </button>
               </div>
             </form>

@@ -5,6 +5,7 @@ import { useSettings } from '../context/SettingsContext';
 import { SEARCH_ENGINES, BACKGROUND_FILTERS } from '../utils/constants';
 import { bgDB } from '../utils/db';
 import { ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface SettingsPanelProps {
 }
 
 export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
+  const {t, i18n} = useTranslation();
   const { settings, updateSetting } = useSettings();
   const [history, setHistory] = useState<any[]>([]); // 存储从 IndexedDB 读出的列表
   const bg = settings.background;
@@ -75,7 +77,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
         
         {/* --- Header --- */}
         <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-          <h2 className="text-xl font-bold tracking-tight">Settings</h2>
+          <h2 className="text-xl font-bold tracking-tight">{t('settings.title') || "Settings"}</h2>
           <button 
             onClick={onClose} 
             className="p-1 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-colors"
@@ -88,19 +90,19 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
           
           {/* --- 背景设置区域 --- */}
           <section>
-            <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">Background Source</h3>
+            <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">{t('settings.background') || "Background Source"}</h3>
             
             {/* 1. 来源切换 Tab */}
             <div className="flex gap-2 mb-6">
-              {['builtin', 'custom', 'local'].map((t) => (
+              {['builtin', 'custom', 'local'].map((tt) => (
                 <button 
-                  key={t}
-                  onClick={() => updateBg({ type: t as any })}
+                  key={tt}
+                  onClick={() => updateBg({ type: tt as any })}
                   className={`flex-1 py-2 text-sm rounded-lg border capitalize transition-all ${
-                    bg.type === t ? 'bg-blue-600 border-transparent text-white shadow-lg' : 'border-white/20 hover:bg-white/10 text-white/70'
+                    bg.type === tt ? 'bg-blue-600 border-transparent text-white shadow-lg' : 'border-white/20 hover:bg-white/10 text-white/70'
                   }`}
                 >
-                  {t === 'builtin' ? 'Bing Daily' : t}
+                  {tt === 'builtin' ? t('settings.builtin') || "Bing Daily" : (tt === 'custom' ? t('settings.custom') || "Custom URL" : t('settings.local') || "Local Gallery")}
                 </button>
               ))}
             </div>
@@ -112,7 +114,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                   type="text" 
                   value={bg.customUrl}
                   onChange={(e) => updateBg({ customUrl: e.target.value })}
-                  placeholder="Paste image URL here..."
+                  placeholder={t('settings.customUrl') || "Paste your custom image URL here..."}
                   className="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none placeholder-white/20"
                 />
               </div>
@@ -127,10 +129,10 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                   <button 
                     onClick={() => document.getElementById('bg-upload')?.click()}
                     className="aspect-square rounded-lg border-2 border-dashed border-white/20 flex flex-col items-center justify-center gap-1 hover:border-blue-500 hover:text-blue-500 hover:bg-white/5 transition-colors text-white/40"
-                    title="Upload Image"
+                    title={t('settings.upload') || "Upload Image"}
                   >
                     <FaPlus size={16} />
-                    <span className="text-[10px] font-medium">Add</span>
+                    <span className="text-[10px] font-medium">{t('quickLinks.add') || "Add"}</span>
                     <input id="bg-upload" type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
                   </button>
 
@@ -165,7 +167,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                       <button 
                         onClick={(e) => handleDelete(item.id, e)}
                         className="absolute top-1 right-1 p-1.5 bg-red-500/90 hover:bg-red-600 rounded-md opacity-0 group-hover:opacity-100 transition-all transform scale-90 group-hover:scale-100 shadow-sm"
-                        title="Delete"
+                        title={t('settings.delete') || "Delete"}
                       >
                         <FaTrash size={10} className="text-white" />
                       </button>
@@ -173,14 +175,14 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                   ))}
                 </div>
                 {history.length === 0 && (
-                  <p className="text-center text-xs text-white/30 py-2">No images uploaded yet.</p>
+                  <p className="text-center text-xs text-white/30 py-2">{t('settings.noImages') || "No images uploaded yet."}</p>
                 )}
               </div>
             )}
 
             {/* 4. 滤镜选择 (Tint Filter) */}
             <div className="mb-6">
-              <div className="text-xs text-white/60 mb-3 font-medium">Tint Filter</div>
+              <div className="text-xs text-white/60 mb-3 font-medium">{t('settings.tint') || "Tint Filter"}</div>
               <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                 {BACKGROUND_FILTERS.map((filter) => {
                   const isActive = (bg.maskColor || '#000000') === filter.color;
@@ -192,7 +194,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                         isActive ? 'border-white scale-110' : 'border-white/10'
                       }`}
                       style={{ backgroundColor: filter.color }}
-                      title={filter.name}
+                      title={t(`filters.${filter.id}`) || filter.name} // 使用国际化文本 --- IGNORE ---
                     >
                       {isActive && (
                          <span className="absolute inset-0 flex items-center justify-center text-white drop-shadow-md">
@@ -208,7 +210,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
             {/* 5. 模糊与亮度滑块 */}
             <div className="space-y-4 p-4 bg-white/5 rounded-xl border border-white/5">
               <div className="flex items-center gap-4">
-                <span className="text-xs text-white/60 w-16 font-medium">Blur</span>
+                <span className="text-xs text-white/60 w-16 font-medium">{t('settings.blur') || "Blur"}</span>
                 <input 
                   type="range" min="0" max="20" 
                   value={bg.blur} 
@@ -218,7 +220,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                 <span className="text-xs text-white/40 w-6 text-right">{bg.blur}px</span>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-xs text-white/60 w-16 font-medium">Dim</span>
+                <span className="text-xs text-white/60 w-16 font-medium">{t('settings.dim') || "Dim"}</span>
                 <input 
                   type="range" min="10" max="100" 
                   value={bg.brightness} 
@@ -234,7 +236,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
 
           {/* --- 时钟设置 --- */}
           <section>
-            <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">Clock Format</h3>
+            <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">{t('settings.clock') || "Clock Format"}</h3>
             <div className="flex gap-2 p-1 bg-black/20 rounded-xl">
               {(['12', '24'] as const).map(fmt => (
                 <button
@@ -246,7 +248,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                       : 'text-white/40 hover:text-white/70'
                   }`}
                 >
-                  {fmt}-Hour
+                    {fmt === '12' ? t('settings.12h') || "12-Hour" : t('settings.24h') || "24-Hour"}
                 </button>
               ))}
             </div>
@@ -254,7 +256,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
 
           {/* --- 字体设置 --- */}
           <section>
-            <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">Typography</h3>
+            <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">{t('settings.font') || "Typography"}</h3>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { id: 'sans', label: 'Modern', font: 'font-sans' },
@@ -270,7 +272,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                       : 'border-white/10 hover:border-white/30 text-white/60 hover:bg-white/5'
                   }`}
                 >
-                  {opt.label}
+                    {t(`settings.${opt.id === 'sans' ? 'modern' : opt.id === 'serif' ? 'elegant' : 'code'}`) || opt.label}
                 </button>
               ))}
             </div>
@@ -278,7 +280,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
 
           {/* --- 搜索引擎 --- */}
           <section>
-            <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">Default Search</h3>
+            <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">{t('settings.search') || "Default Search"}</h3>
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(SEARCH_ENGINES).map(([key, engine]) => (
                 <button
@@ -291,7 +293,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                   }`}
                 >
                   <span className="text-lg">{engine.icon}</span>
-                  <span className="font-medium">{engine.name}</span>
+                  <span className="font-medium">{t(`settings.${key}`) || engine.name}</span>
                 </button>
               ))}
             </div>
@@ -299,28 +301,28 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
 
           {/* --- 天气服务设置 --- */}
           <section>
-            <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">Weather Service (QWeather)</h3>
+            <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">{t('settings.weather') || "Weather Service (QWeather)"}</h3>
             <div className="bg-white/5 border border-white/10 rounded-xl p-4">
               <label className="block text-xs text-white/60 mb-2">
-                API Key (Free Subscription)
+                API Key
               </label>
               <input
                 type="text"
                 value={settings.weatherApiHost}
                 onChange={(e) => updateSetting('weatherApiHost', e.target.value)}
-                placeholder="Paste your host here..."
+                placeholder={t('settings.placeholderHost') || "Paste your host URL here..."}
                 className="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none placeholder-white/20 font-mono tracking-wide"
               />
               <input 
                 type="password" // 使用密码框保护隐私
                 value={settings.weatherApiKey}
                 onChange={(e) => updateSetting('weatherApiKey', e.target.value)}
-                placeholder="Paste your key here..."
+                placeholder={t('settings.placeholderKey') || "Paste your API key here..."}
                 className="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none placeholder-white/20 font-mono tracking-wide"
               />
               <div className="mt-3 flex items-center justify-between">
                 <span className="text-[10px] text-white/40">
-                  Data provided by QWeather (HeFeng)
+                  {t('settings.weatherProvider') || "Data provided by QWeather (HeFeng)"}
                 </span>
                 <a 
                   href="https://console.qweather.com/" 
@@ -328,7 +330,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                   rel="noreferrer"
                   className="flex items-center gap-1 text-[10px] text-blue-400 hover:text-blue-300 transition-colors"
                 >
-                  Get Free Key <ExternalLink size={10} />
+                  {t('settings.getKey') || "Get Free Key"} <ExternalLink size={10} />
                 </a>
               </div>
             </div>

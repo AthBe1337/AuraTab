@@ -1,8 +1,10 @@
 import { useState, KeyboardEvent, useRef, useEffect } from 'react';
 import { SEARCH_ENGINES } from '../../utils/constants';
 import { useSettings } from '../../context/SettingsContext'; // 引入
+import { useTranslation } from 'react-i18next'; // 引入 i18n
 
 export const SearchBar = () => {
+  const {t, i18n} = useTranslation(); // 初始化 i18n
   const { settings, updateSetting } = useSettings(); // 使用全局设置
   const [query, setQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -55,7 +57,7 @@ export const SearchBar = () => {
             <svg className={`w-3 h-3 ml-2 transition-transform opacity-60 ${isMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
           </button>
 
-          {/* 下拉菜单 (也升级一下样式) */}
+          {/* 下拉菜单 */}
           {isMenuOpen && (
             <div className="absolute top-full left-0 mt-3 w-48 
                             bg-slate-900/80 backdrop-blur-xl 
@@ -72,7 +74,7 @@ export const SearchBar = () => {
                     ${settings.searchEngine === key ? 'bg-white/10 text-white font-medium' : ''}`}
                 >
                   <span className="w-5 text-center">{engine.icon}</span>
-                  {engine.name}
+                  {t(`settings.${engine.name.toLowerCase()}`) || engine.name}
                 </button>
               ))}
             </div>
@@ -85,7 +87,7 @@ export const SearchBar = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleSearch}
-          placeholder={`Search with ${currentEngine.name}...`}
+          placeholder={`${t(`searchwith.${settings.searchEngine}`)}...` || `Search with ${currentEngine.name}...`}
           // text-shadow-sm 让文字本身也有阴影，更清晰
           className="flex-1 py-4 px-4 bg-transparent text-white placeholder-white/40 
                      text-lg border-none outline-none rounded-r-full 

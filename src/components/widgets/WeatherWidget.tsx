@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MapPin, AlertCircle, Settings } from 'lucide-react'; // 引入 Settings 图标
 import { getWeatherIcon } from '../../utils/weatherUtils';
 import { useSettings } from '../../context/SettingsContext'; // 引入 useSettings
+import { useTranslation } from 'react-i18next'; // 引入 i18n
 
 interface WeatherData {
   temp: number;
@@ -11,6 +12,7 @@ interface WeatherData {
 }
 
 export const WeatherWidget = () => {
+  const {t, i18n} = useTranslation(); // 初始化 i18n
   const { settings } = useSettings(); // 获取全局设置
   const apiKey = settings.weatherApiKey; // 获取 Key
   const apiHost = settings.weatherApiHost || 'https://devapi.qweather.com'; // 获取 Host，提供默认值
@@ -54,10 +56,12 @@ export const WeatherWidget = () => {
         const lat = pos.coords.latitude.toFixed(2);
         const lon = pos.coords.longitude.toFixed(2);
         const locationStr = `${lon},${lat}`;
+        let lang = i18n.language;
+        lang = lang === 'zh-CN' ? 'zh' : lang.startsWith('zh') ? 'zh-hant' : lang;
 
         // 使用配置的 apiKey
         const cityRes = await fetch(
-          `https://${apiHost}/geo/v2/city/lookup?location=${locationStr}&key=${apiKey}`
+          `https://${apiHost}/geo/v2/city/lookup?location=${locationStr}&key=${apiKey}&lang=${lang}`
         );
         const cityJson = await cityRes.json();
         
@@ -69,7 +73,7 @@ export const WeatherWidget = () => {
         const cityName = cityJson.location?.[0]?.name || 'Unknown';
 
         const weatherRes = await fetch(
-          `https://${apiHost}/v7/weather/now?location=${locationStr}&key=${apiKey}`
+          `https://${apiHost}/v7/weather/now?location=${locationStr}&key=${apiKey}&lang=${lang}`
         );
         const weatherJson = await weatherRes.json();
 
@@ -114,7 +118,7 @@ export const WeatherWidget = () => {
         
         {/* Hover 提示文字 */}
         <div className="absolute top-12 right-0 w-max px-3 py-1 bg-black/80 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-white/10 shadow-xl">
-          {error === 'No API Key' ? 'Setup Weather Key' : error}
+          {error === 'No API Key' ? t('settings.setupWeatherKey') || 'Setup Weather Key' : (error === 'Loc Denied' ? t('weather.locationDenied') || 'Location Access Denied' : error)}
         </div>
       </div>
     );

@@ -6,75 +6,54 @@ import {
   CloudLightning, 
   Snowflake, 
   CloudFog, 
-  Moon 
+  Moon,
+  Wind
 } from 'lucide-react';
 
-// Open-Meteo WMO Weather Codes
-// https://open-meteo.com/en/docs
-export const getWeatherIcon = (code: number, isDay: boolean = true) => {
+// 和风天气代码映射
+// https://dev.qweather.com/docs/resource/icons/
+export const getWeatherIcon = (code: string) => {
+  const c = parseInt(code);
   const props = { size: 20, className: "text-white drop-shadow-md" };
 
-  // 0: Clear sky
-  if (code === 0) {
-    return isDay ? <Sun {...props} className="text-yellow-400 drop-shadow-md" /> : <Moon {...props} />;
+  // 100: 晴
+  if (c === 100 || c === 150) {
+    return <Sun {...props} className="text-yellow-400 drop-shadow-md" />;
+  }
+  // 150: 晴 (夜晚) - 和风通常用 150 表示夜晚晴，但有时也混用
+  if (c === 150 || c === 153) {
+    return <Moon {...props} />;
   }
 
-  // 1, 2, 3: Mainly clear, partly cloudy, and overcast
-  if (code >= 1 && code <= 3) {
-    return isDay ? <CloudSun {...props} /> : <Cloud {...props} />;
+  // 101-104: 多云/阴
+  if (c >= 101 && c <= 104) {
+    return <CloudSun {...props} />; // 或者根据日夜判断，这里简化
+  }
+  
+  // 300-399: 雨
+  if (c >= 300 && c <= 399) {
+    return <CloudRain {...props} />;
   }
 
-  // 45, 48: Fog
-  if (code === 45 || code === 48) {
+  // 400-499: 雪
+  if (c >= 400 && c <= 499) {
+    return <Snowflake {...props} />;
+  }
+
+  // 500-515: 雾/霾
+  if (c >= 500 && c <= 515) {
     return <CloudFog {...props} />;
   }
 
-  // 51-67: Drizzle & Rain
-  if (code >= 51 && code <= 67) {
-    return <CloudRain {...props} />;
+  // 200-213: 风/飓风
+  if (c >= 200 && c <= 213) {
+    return <Wind {...props} />;
   }
 
-  // 71-77: Snow
-  if (code >= 71 && code <= 77) {
-    return <Snowflake {...props} />;
-  }
-
-  // 80-82: Rain showers
-  if (code >= 80 && code <= 82) {
-    return <CloudRain {...props} />;
-  }
-
-  // 85-86: Snow showers
-  if (code >= 85 && code <= 86) {
-    return <Snowflake {...props} />;
-  }
-
-  // 95-99: Thunderstorm
-  if (code >= 95 && code <= 99) {
+  // 雷阵雨
+  if (c === 302 || c === 303 || c === 304) {
     return <CloudLightning {...props} />;
   }
 
-  return <Sun {...props} />;
-};
-
-export const getWeatherDesc = (code: number) => {
-  const codes: Record<number, string> = {
-    0: 'Clear',
-    1: 'Mainly Clear',
-    2: 'Partly Cloudy',
-    3: 'Overcast',
-    45: 'Fog',
-    48: 'Fog',
-    51: 'Drizzle',
-    53: 'Drizzle',
-    55: 'Drizzle',
-    61: 'Rain',
-    63: 'Rain',
-    65: 'Heavy Rain',
-    71: 'Snow',
-    73: 'Snow',
-    75: 'Heavy Snow',
-    95: 'Thunderstorm',
-  };
-  return codes[code] || 'Unknown';
+  return <Cloud {...props} />; // 默认
 };

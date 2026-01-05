@@ -3,7 +3,8 @@ import { X, Check } from 'lucide-react';
 import { FaTrash, FaPlus } from 'react-icons/fa'; 
 import { useSettings } from '../context/SettingsContext';
 import { SEARCH_ENGINES, BACKGROUND_FILTERS } from '../utils/constants';
-import { bgDB } from '../utils/db'; // 确保你已经在 utils/db.ts 创建了它
+import { bgDB } from '../utils/db';
+import { ExternalLink } from 'lucide-react';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -293,6 +294,43 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                   <span className="font-medium">{engine.name}</span>
                 </button>
               ))}
+            </div>
+          </section>
+
+          {/* --- 天气服务设置 --- */}
+          <section>
+            <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">Weather Service (QWeather)</h3>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <label className="block text-xs text-white/60 mb-2">
+                API Key (Free Subscription)
+              </label>
+              <input
+                type="text"
+                value={settings.weatherApiHost}
+                onChange={(e) => updateSetting('weatherApiHost', e.target.value)}
+                placeholder="Paste your host here..."
+                className="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none placeholder-white/20 font-mono tracking-wide"
+              />
+              <input 
+                type="password" // 使用密码框保护隐私
+                value={settings.weatherApiKey}
+                onChange={(e) => updateSetting('weatherApiKey', e.target.value)}
+                placeholder="Paste your key here..."
+                className="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none placeholder-white/20 font-mono tracking-wide"
+              />
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-[10px] text-white/40">
+                  Data provided by QWeather (HeFeng)
+                </span>
+                <a 
+                  href="https://console.qweather.com/" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="flex items-center gap-1 text-[10px] text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  Get Free Key <ExternalLink size={10} />
+                </a>
+              </div>
             </div>
           </section>
 

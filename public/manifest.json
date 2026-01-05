@@ -17,6 +17,8 @@
     "favicon"
   ],
   "host_permissions": [
-    "https://*/*"
+    "https://*/*", 
+    "https://devapi.qweather.com/*",
+    "https://geoapi.qweather.com/*"
   ]
 }

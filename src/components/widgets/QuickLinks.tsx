@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { 
   DndContext, 
@@ -19,9 +19,54 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { useSettings } from '../../context/SettingsContext';
 import type { QuickLink } from '../../context/SettingsContext';
+import { Globe, MoreVertical, Edit2, Trash2 } from 'lucide-react'; // 新增图标
+
+// --- Favicon 组件 (保持不变) ---
+const FaviconImage = ({ url, title, className }: { url: string, title: string, className?: string }) => {
+  const domain = new URL(url).hostname;
+  const sources = getIconSources(domain);
+  const [sourceIndex, setSourceIndex] = useState(0);
+  const [isError, setIsError] = useState(false);
+
+  const handleError = () => {
+    if (sourceIndex < sources.length - 1) {
+      setSourceIndex(prev => prev + 1);
+    } else {
+      setIsError(true);
+    }
+  };
+
+  if (isError) {
+    return (
+      <div className={`${className} flex items-center justify-center bg-white/10`}>
+        <Globe size={18} className="text-white/50" />
+      </div>
+    );
+  }
+
+  return (
+    <img 
+      src={sources[sourceIndex]} 
+      alt={title} 
+      className={className}
+      onError={handleError}
+    />
+  );
+};
+
+const getIconSources = (domain: string) => [
+  `https://api.uomg.com/api/get.favicon?url=${domain}`,
+  `https://icons.duckduckgo.com/ip3/${domain}.ico` 
+];
 
 // --- 1. 子组件：可拖拽的单个链接 ---
-const SortableLink = ({ link, onDelete }: { link: QuickLink; onDelete: (id: string, e: React.MouseEvent) => void }) => {
+interface SortableLinkProps {
+  link: QuickLink;
+  onEdit: (link: QuickLink) => void;
+  onDelete: (id: string) => void;
+}
+
+const SortableLink = ({ link, onEdit, onDelete }: SortableLinkProps) => {
   const {
     attributes,
     listeners,
@@ -31,37 +76,50 @@ const SortableLink = ({ link, onDelete }: { link: QuickLink; onDelete: (id: stri
     isDragging
   } = useSortable({ id: link.id });
 
+  // --- 1. 将状态定义移到最前面，以便在 style 中使用 ---
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // --- 2. 修改 style：当菜单打开时，赋予极高的 zIndex ---
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    zIndex: isDragging ? 50 : 'auto',
+    // 关键逻辑：
+    // - 拖拽中：z-50 (保证拖拽物体在最上层)
+    // - 菜单打开：z-40 (保证弹出的菜单盖住后面的兄弟元素)
+    // - 默认：auto
+    zIndex: isDragging ? 50 : (isMenuOpen ? 40 : 'auto'), 
     opacity: isDragging ? 0.5 : 1,
+    position: 'relative' as const, // 确保 zIndex 生效
   };
 
-  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  // ... useEffect (点击外部关闭菜单) 保持不变 ...
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMenuOpen]);
 
+  // ... handlePointerDown / handleClick 保持不变 ...
   const handlePointerDown = (e: React.PointerEvent) => {
     setStartPos({ x: e.clientX, y: e.clientY });
   };
 
   const handleClick = (e: React.MouseEvent) => {
+    if (isMenuOpen) return;
     const distance = Math.sqrt(
       Math.pow(e.clientX - startPos.x, 2) + 
       Math.pow(e.clientY - startPos.y, 2)
     );
-
     if (distance < 5) {
       window.location.href = link.url;
-    }
-  };
-
-  const getFavicon = (url: string) => {
-    try {
-      const domain = new URL(url).hostname;
-      //return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-      return `https://icons.duckduckgo.com/ip3/${domain}.ico`;
-    } catch (e) {
-      return '';
     }
   };
 
@@ -88,21 +146,59 @@ const SortableLink = ({ link, onDelete }: { link: QuickLink; onDelete: (id: stri
                         shadow-lg hover:shadow-2xl 
                         transition-all duration-300 group-hover:-translate-y-1">
           
-          <img 
-            src={getFavicon(link.url)} 
-            alt={link.title} 
+          <FaviconImage 
+            url={link.url}
+            title={link.title}
             className="w-8 h-8 rounded opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-transform duration-300 pointer-events-none" 
           />
 
-          {/* 删除按钮 */}
-          <button
-            onPointerDown={(e) => e.stopPropagation()} 
-            onClick={(e) => onDelete(link.id, e)}
-            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 cursor-pointer z-10 shadow-sm"
-            title="Remove"
+          {/* --- 右上角菜单触发按钮 --- */}
+          <div 
+            ref={menuRef}
+            className="absolute -top-2 -right-2 z-20"
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
           >
-            ×
-          </button>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={`w-6 h-6 rounded-full flex items-center justify-center transition-all shadow-sm
+                ${isMenuOpen 
+                  ? 'bg-slate-800 text-white opacity-100' 
+                  : 'bg-black/50 text-white/70 opacity-0 group-hover:opacity-100 hover:bg-black/80'}`}
+            >
+               <MoreVertical size={14} />
+            </button>
+
+            {/* --- 下拉菜单 --- */}
+            {isMenuOpen && (
+              // 这里的 z-30 是相对于父级 (div.relative) 的
+              // 但因为父级现在的 zIndex 已经是 40 了，所以这个菜单会高于页面上其他 zIndex 为 auto 的元素
+              <div className="absolute top-7 left-1/2 -translate-x-1/2 w-24 bg-slate-800 border border-white/10 rounded-lg shadow-xl overflow-hidden animate-fade-in flex flex-col z-30">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(false);
+                    onEdit(link);
+                  }}
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-white/80 hover:bg-white/10 hover:text-white transition-colors text-left"
+                >
+                  <Edit2 size={12} /> Edit
+                </button>
+                <div className="h-[1px] bg-white/10 mx-1"></div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(false);
+                    onDelete(link.id);
+                  }}
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors text-left"
+                >
+                  <Trash2 size={12} /> Delete
+                </button>
+              </div>
+            )}
+          </div>
+
         </div>
         
         {/* 标题 */}
@@ -119,9 +215,21 @@ const SortableLink = ({ link, onDelete }: { link: QuickLink; onDelete: (id: stri
 // --- 2. 主组件 ---
 export const QuickLinks = () => {
   const { settings, updateSetting } = useSettings();
-  const [isAdding, setIsAdding] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newUrl, setNewUrl] = useState('');
+  
+  // 模态框状态管理
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    mode: 'add' | 'edit';
+    editingId: string | null;
+  }>({
+    isOpen: false,
+    mode: 'add',
+    editingId: null
+  });
+
+  // 表单状态
+  const [titleInput, setTitleInput] = useState('');
+  const [urlInput, setUrlInput] = useState('');
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -145,30 +253,55 @@ export const QuickLinks = () => {
     }
   };
 
-  const handleAddLink = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTitle || !newUrl) return;
+  // --- 操作处理 ---
 
-    let finalUrl = newUrl;
+  // 打开添加模态框
+  const openAddModal = () => {
+    setTitleInput('');
+    setUrlInput('');
+    setModalState({ isOpen: true, mode: 'add', editingId: null });
+  };
+
+  // 打开编辑模态框
+  const openEditModal = (link: QuickLink) => {
+    setTitleInput(link.title);
+    setUrlInput(link.url);
+    setModalState({ isOpen: true, mode: 'edit', editingId: link.id });
+  };
+
+  // 保存（添加或更新）
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!titleInput || !urlInput) return;
+
+    let finalUrl = urlInput;
     if (!/^https?:\/\//i.test(finalUrl)) {
       finalUrl = 'https://' + finalUrl;
     }
 
-    const newLink: QuickLink = {
-      id: Date.now().toString(),
-      title: newTitle,
-      url: finalUrl
-    };
+    if (modalState.mode === 'add') {
+      // 添加逻辑
+      const newLink: QuickLink = {
+        id: Date.now().toString(),
+        title: titleInput,
+        url: finalUrl
+      };
+      updateSetting('quickLinks', [...settings.quickLinks, newLink]);
+    } else if (modalState.mode === 'edit' && modalState.editingId) {
+      // 编辑逻辑
+      const updatedLinks = settings.quickLinks.map(link => 
+        link.id === modalState.editingId 
+          ? { ...link, title: titleInput, url: finalUrl }
+          : link
+      );
+      updateSetting('quickLinks', updatedLinks);
+    }
 
-    updateSetting('quickLinks', [...settings.quickLinks, newLink]);
-    setNewTitle('');
-    setNewUrl('');
-    setIsAdding(false);
+    setModalState({ ...modalState, isOpen: false });
   };
 
-  const handleDelete = (id: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  // 删除逻辑
+  const handleDelete = (id: string) => {
     const updated = settings.quickLinks.filter(link => link.id !== id);
     updateSetting('quickLinks', updated);
   };
@@ -190,17 +323,17 @@ export const QuickLinks = () => {
               <SortableLink 
                 key={link.id} 
                 link={link} 
+                onEdit={openEditModal}
                 onDelete={handleDelete} 
               />
             ))}
           </SortableContext>
 
-          {/* --- 添加按钮 (样式升级) --- */}
+          {/* --- 添加按钮 --- */}
           <button
-            onClick={() => setIsAdding(true)}
+            onClick={openAddModal}
             className="group flex flex-col items-center gap-2 w-20 outline-none"
           >
-            {/* 图标容器：样式与 SortableLink 保持一致，但保留 border-dashed */}
             <div className="relative w-16 h-16 flex items-center justify-center 
                             bg-black/20 hover:bg-black/40 
                             backdrop-blur-md 
@@ -211,7 +344,6 @@ export const QuickLinks = () => {
               <span className="text-3xl text-white/40 group-hover:text-white/90 font-light transition-colors">+</span>
             </div>
             
-            {/* 标签：样式与 SortableLink 完全一致 */}
             <span className="text-xs text-white/80 font-medium truncate max-w-full 
                              drop-shadow-md select-none mt-1 px-2 py-0.5 rounded-md 
                              bg-black/0 group-hover:bg-black/30 transition-colors duration-300">
@@ -221,23 +353,26 @@ export const QuickLinks = () => {
         </div>
       </DndContext>
 
-      {isAdding && createPortal(
+      {/* --- 通用模态框 (添加/编辑) --- */}
+      {modalState.isOpen && createPortal(
         <div 
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" 
-          onClick={() => setIsAdding(false)}
+          onClick={() => setModalState({ ...modalState, isOpen: false })}
         >
            <div 
              className="bg-slate-900 border border-white/10 p-6 rounded-xl w-80 shadow-2xl relative"
              onClick={e => e.stopPropagation()}
            >
-            <h3 className="text-white font-bold mb-4">Add Shortcut</h3>
-            <form onSubmit={handleAddLink} className="space-y-3">
+            <h3 className="text-white font-bold mb-4">
+              {modalState.mode === 'add' ? 'Add Shortcut' : 'Edit Shortcut'}
+            </h3>
+            <form onSubmit={handleSave} className="space-y-3">
               <div>
                 <input
                   type="text"
                   placeholder="Title"
-                  value={newTitle}
-                  onChange={e => setNewTitle(e.target.value)}
+                  value={titleInput}
+                  onChange={e => setTitleInput(e.target.value)}
                   className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-white/30 focus:border-white/40 outline-none text-sm"
                   autoFocus
                 />
@@ -246,14 +381,25 @@ export const QuickLinks = () => {
                 <input
                   type="text"
                   placeholder="URL"
-                  value={newUrl}
-                  onChange={e => setNewUrl(e.target.value)}
+                  value={urlInput}
+                  onChange={e => setUrlInput(e.target.value)}
                   className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-white/30 focus:border-white/40 outline-none text-sm"
                 />
               </div>
               <div className="flex gap-2 mt-4">
-                <button type="button" onClick={() => setIsAdding(false)} className="flex-1 py-2 text-xs text-white/60 hover:bg-white/5 rounded-lg">Cancel</button>
-                <button type="submit" className="flex-1 py-2 text-xs bg-white text-black font-bold rounded-lg hover:bg-gray-200">Add</button>
+                <button 
+                  type="button" 
+                  onClick={() => setModalState({ ...modalState, isOpen: false })} 
+                  className="flex-1 py-2 text-xs text-white/60 hover:bg-white/5 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="flex-1 py-2 text-xs bg-white text-black font-bold rounded-lg hover:bg-gray-200"
+                >
+                  {modalState.mode === 'add' ? 'Add' : 'Save'}
+                </button>
               </div>
             </form>
           </div>

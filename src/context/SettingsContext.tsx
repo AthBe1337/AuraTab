@@ -1,5 +1,16 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
+export interface AppSettings {
+  theme: 'dark' | 'light';
+  clockFormat: '12' | '24';
+  fontFamily: 'sans' | 'serif' | 'mono';
+  searchEngine: string;
+  quickLinks: QuickLink[];
+  background: BackgroundSettings;
+  weatherApiKey: string; // <--- 新增
+  weatherApiHost: string;
+}
+
 export interface BackgroundSettings {
   type: 'builtin' | 'custom' | 'local',
   customUrl: string,
@@ -39,13 +50,14 @@ const DEFAULT_SETTINGS: AppSettings = {
   ],
   background: {
     type: 'builtin',
-    // 给自定义 URL 一个默认值 (Unsplash 源)
     customUrl: 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=1920&auto=format&fit=crop',
-    localData: '', 
+    activeLocalId: '',
     blur: 0,
-    brightness: 70,
+    brightness: 60,
     maskColor: '#000000',
-  }
+  },
+  weatherApiKey: '',
+  weatherApiHost: '' // 你可以根据需要更改这个默认值
 };
 
 interface SettingsContextType {

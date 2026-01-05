@@ -4,6 +4,8 @@ import { SearchBar } from './components/widgets/SearchBar';
 import { QuickLinks } from './components/widgets/QuickLinks';
 import { SettingsPanel } from './components/SettingsPanel';
 import { SettingsProvider } from './context/SettingsContext';
+import { Background } from './components/Background';
+import { WeatherWidget } from './components/widgets/WeatherWidget';
 
 // 创建一个内部组件来使用 Context (因为 App 自身是 Provider 的外层，无法直接在 App 里 useSettings)
 const MainLayout = () => {
@@ -11,8 +13,12 @@ const MainLayout = () => {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center 
-                    bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 relative overflow-hidden">
+                    from-indigo-900 via-purple-900 to-slate-900 relative overflow-hidden">
       
+      <Background />
+
+      <WeatherWidget />
+
       {/* 设置按钮 (左下角) */}
       <button 
         onClick={() => setIsSettingsOpen(true)}

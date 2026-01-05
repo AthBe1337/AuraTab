@@ -1,5 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
+export interface BackgroundSettings {
+  type: 'builtin' | 'custom' | 'local',
+  customUrl: string,
+  activeLocalId: string, // 新增：存储 IndexedDB 中的图片 ID
+  blur: number,
+  brightness: number,
+  maskColor: string
+}
+
 // 1. 定义单个链接的数据结构
 export interface QuickLink {
   id: string;
@@ -14,6 +23,7 @@ export interface AppSettings {
   fontFamily: 'sans' | 'serif' | 'mono';
   searchEngine: string;
   quickLinks: QuickLink[];
+  background: BackgroundSettings;
 }
 
 // 3. 更新默认设置 (给几个常用的作为初始值)
@@ -26,7 +36,16 @@ const DEFAULT_SETTINGS: AppSettings = {
     { id: '1', title: 'GitHub', url: 'https://github.com' },
     { id: '2', title: 'YouTube', url: 'https://youtube.com' },
     { id: '3', title: 'Gmail', url: 'https://mail.google.com' },
-  ]
+  ],
+  background: {
+    type: 'builtin',
+    // 给自定义 URL 一个默认值 (Unsplash 源)
+    customUrl: 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=1920&auto=format&fit=crop',
+    localData: '', 
+    blur: 0,
+    brightness: 70,
+    maskColor: '#000000',
+  }
 };
 
 interface SettingsContextType {

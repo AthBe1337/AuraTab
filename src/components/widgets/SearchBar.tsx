@@ -28,38 +28,50 @@ export const SearchBar = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-2xl mt-8 px-4 relative z-50"> {/* z-50 保证下拉菜单在最上层 */}
-      <div className="relative group flex items-center">
-        {/* 背景模糊层 */}
-        <div className="absolute inset-0 bg-white/20 backdrop-blur-md rounded-full transition-all duration-300 group-hover:bg-white/30 shadow-lg"></div>
+    <div className="w-full max-w-2xl mt-8 px-4 relative z-40">
+      
+      {/* --- 视觉容器 --- 
+         改动点：
+         1. bg-black/20: 使用黑色半透明，提升白字对比度
+         2. backdrop-blur-xl: 加大模糊半径
+         3. border border-white/10: 增加微弱描边，划清界限
+         4. shadow-2xl: 增加深重阴影，制造悬浮感
+      */}
+      <div className="relative group flex items-center 
+                      bg-black/20 hover:bg-black/30 
+                      backdrop-blur-xl 
+                      border border-white/10 hover:border-white/20
+                      rounded-full shadow-2xl transition-all duration-300">
         
-        {/* --- 搜索引擎切换按钮 --- */}
+        {/* 搜索引擎切换按钮 */}
         <div className="relative" ref={menuRef}>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="flex items-center justify-center w-12 h-full py-4 pl-6 pr-2 text-white/90 hover:text-white font-bold cursor-pointer outline-none"
+            className="flex items-center justify-center w-14 h-full py-4 pl-5 pr-3 
+                       text-white/80 hover:text-white font-bold cursor-pointer outline-none border-r border-white/10" // 加了右边框分割
             title={`Current: ${currentEngine.name}`}
           >
-            {/* 显示当前图标 */}
-            <span className="text-xl">{currentEngine.icon}</span>
-            {/* 小箭头 */}
-            <svg className={`w-3 h-3 ml-1 transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            <span className="text-xl drop-shadow-md">{currentEngine.icon}</span>
+            <svg className={`w-3 h-3 ml-2 transition-transform opacity-60 ${isMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
           </button>
 
-          {/* 下拉菜单 */}
+          {/* 下拉菜单 (也升级一下样式) */}
           {isMenuOpen && (
-            <div className="absolute top-full left-4 mt-2 w-40 bg-slate-800/90 backdrop-blur-xl rounded-xl shadow-xl overflow-hidden border border-white/10 animate-fade-in origin-top-left">
+            <div className="absolute top-full left-0 mt-3 w-48 
+                            bg-slate-900/80 backdrop-blur-xl 
+                            rounded-xl border border-white/10 shadow-2xl 
+                            overflow-hidden animate-fade-in origin-top-left py-2">
               {Object.entries(SEARCH_ENGINES).map(([key, engine]) => (
                 <button
                   key={key}
                   onClick={() => {
-                    updateSetting('searchEngine', key); // <--- 关键修改
+                    updateSetting('searchEngine', key);
                     setIsMenuOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 flex items-center gap-3 transition-colors
-                    ${settings.searchEngine === key ? 'bg-white/20' : ''}`}
+                  className={`w-full text-left px-4 py-3 text-sm text-white/80 hover:text-white hover:bg-white/10 flex items-center gap-3 transition-colors
+                    ${settings.searchEngine === key ? 'bg-white/10 text-white font-medium' : ''}`}
                 >
-                  <span>{engine.icon}</span>
+                  <span className="w-5 text-center">{engine.icon}</span>
                   {engine.name}
                 </button>
               ))}
@@ -67,16 +79,27 @@ export const SearchBar = () => {
           )}
         </div>
 
-        {/* --- 输入框 --- */}
+        {/* 输入框 */}
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleSearch}
           placeholder={`Search with ${currentEngine.name}...`}
-          className="flex-1 py-4 pr-8 bg-transparent text-white placeholder-white/60 text-xl border-none outline-none rounded-r-full font-light tracking-wide relative z-10"
+          // text-shadow-sm 让文字本身也有阴影，更清晰
+          className="flex-1 py-4 px-4 bg-transparent text-white placeholder-white/40 
+                     text-lg border-none outline-none rounded-r-full 
+                     font-light tracking-wide drop-shadow-sm"
           autoFocus
         />
+        
+        {/* 右侧装饰：搜索图标 */}
+        <div className="pr-6 opacity-50 group-hover:opacity-100 transition-opacity">
+           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </div>
+
       </div>
     </div>
   );

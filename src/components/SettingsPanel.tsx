@@ -13,7 +13,7 @@ interface SettingsPanelProps {
 }
 
 export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
-  const {t, i18n} = useTranslation();
+  const { t } = useTranslation();
   const { settings, updateSetting } = useSettings();
   const [history, setHistory] = useState<any[]>([]); // 存储从 IndexedDB 读出的列表
   const bg = settings.background;

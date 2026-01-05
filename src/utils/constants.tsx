@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { SiBaidu, SiDuckduckgo } from 'react-icons/si';
 import { FcGoogle } from 'react-icons/fc';
 

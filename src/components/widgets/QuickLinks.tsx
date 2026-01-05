@@ -68,7 +68,7 @@ interface SortableLinkProps {
 }
 
 const SortableLink = ({ link, onEdit, onDelete }: SortableLinkProps) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const {
     attributes,
     listeners,
@@ -216,7 +216,7 @@ const SortableLink = ({ link, onEdit, onDelete }: SortableLinkProps) => {
 
 // --- 2. 主组件 ---
 export const QuickLinks = () => {
-  const {t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { settings, updateSetting } = useSettings();
   
   // 模态框状态管理

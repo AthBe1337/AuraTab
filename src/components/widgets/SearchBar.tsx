@@ -1,10 +1,10 @@
-import { useState, KeyboardEvent, useRef, useEffect } from 'react';
+import { useState, type KeyboardEvent, useRef, useEffect } from 'react';
 import { SEARCH_ENGINES } from '../../utils/constants';
 import { useSettings } from '../../context/SettingsContext'; // 引入
 import { useTranslation } from 'react-i18next'; // 引入 i18n
 
 export const SearchBar = () => {
-  const {t, i18n} = useTranslation(); // 初始化 i18n
+  const { t } = useTranslation(); // 初始化 i18n
   const { settings, updateSetting } = useSettings(); // 使用全局设置
   const [query, setQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);

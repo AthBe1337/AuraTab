@@ -12,7 +12,7 @@ interface WeatherData {
 }
 
 export const WeatherWidget = () => {
-  const {t, i18n} = useTranslation(); // 初始化 i18n
+  const { t, i18n } = useTranslation(); // 初始化 i18n
   const { settings } = useSettings(); // 获取全局设置
   const apiKey = settings.weatherApiKey; // 获取 Key
   const apiHost = settings.weatherApiHost || 'https://devapi.qweather.com'; // 获取 Host，提供默认值

@@ -1,0 +1,51 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ["master"]
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (检出代码)
+        uses: actions/checkout@v4
+
+      - name: Setup Node (安装 Node.js)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: 'npm'
+
+      - name: Install Dependencies (安装依赖)
+        run: npm ci
+
+      - name: Build (构建项目)
+        run: npm run build
+
+      - name: Upload artifact (上传构建产物)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist' 
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build # 必须等待 build 任务完成
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages (部署)
+        id: deployment
+        uses: actions/deploy-pages@v4

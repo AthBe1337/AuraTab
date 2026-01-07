@@ -49,7 +49,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     { id: '3', title: 'Gmail', url: 'https://mail.google.com' },
   ],
   background: {
-    type: 'builtin',
+    type: 'custom',
     customUrl: 'https://api.mtyqx.cn/api/random.php?return=image',
     activeLocalId: '',
     blur: 0,

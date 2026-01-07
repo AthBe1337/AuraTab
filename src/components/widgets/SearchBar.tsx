@@ -32,13 +32,6 @@ export const SearchBar = () => {
   return (
     <div className="w-full max-w-2xl mt-8 px-4 relative z-40">
       
-      {/* --- 视觉容器 --- 
-         改动点：
-         1. bg-black/20: 使用黑色半透明，提升白字对比度
-         2. backdrop-blur-xl: 加大模糊半径
-         3. border border-white/10: 增加微弱描边，划清界限
-         4. shadow-2xl: 增加深重阴影，制造悬浮感
-      */}
       <div className="relative group flex items-center 
                       bg-black/20 hover:bg-black/30 
                       backdrop-blur-xl 

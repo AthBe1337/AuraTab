@@ -7,14 +7,14 @@ export interface AppSettings {
   searchEngine: string;
   quickLinks: QuickLink[];
   background: BackgroundSettings;
-  weatherApiKey: string; // <--- 新增
+  weatherApiKey: string;
   weatherApiHost: string;
 }
 
 export interface BackgroundSettings {
   type: 'builtin' | 'custom' | 'local',
   customUrl: string,
-  activeLocalId: string, // 新增：存储 IndexedDB 中的图片 ID
+  activeLocalId: string, // 存储 IndexedDB 中的图片 ID
   blur: number,
   brightness: number,
   maskColor: string
@@ -57,7 +57,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     maskColor: '#000000',
   },
   weatherApiKey: '',
-  weatherApiHost: '' // 你可以根据需要更改这个默认值
+  weatherApiHost: ''
 };
 
 interface SettingsContextType {

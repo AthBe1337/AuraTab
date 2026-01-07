@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSettings } from '../../context/SettingsContext'; // 引入 Hook
+import { useSettings } from '../../context/SettingsContext';
 
 export const Clock = () => {
   const { settings } = useSettings(); // 获取全局设置

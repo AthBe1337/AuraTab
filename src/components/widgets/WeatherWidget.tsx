@@ -21,7 +21,7 @@ export const WeatherWidget = () => {
   const [loading, setLoading] = useState(false); // 默认为 false，有了 Key 才开始 load
   const [error, setError] = useState('');
 
-  // 智能滚动组件 (保持不变)
+  // 智能滚动组件
   const CityName = ({ name }: { name: string }) => {
     const isLong = name.length > 9;
     if (!isLong) return <span className="max-w-[80px] truncate">{name}</span>;

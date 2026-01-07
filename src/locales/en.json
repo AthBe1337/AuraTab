@@ -33,7 +33,12 @@
     "customUrl": "Paste image URL...",
     "placeholderKey": "Paste your key here...",
     "placeholderHost": "Paste your host URL here...",
-    "getKey": "Get Free Key"
+    "getKey": "Get Free Key",
+    "backup": "Data Backup",
+    "export": "Export Config",
+    "import": "Import Config",
+    "importSuccess": "Settings imported successfully! Reloading...",
+    "importError": "Invalid settings file."
   },
   "quickLinks": {
     "add": "Add",

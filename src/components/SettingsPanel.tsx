@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Check } from 'lucide-react'; 
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Check, Download, Upload, AlertCircle, CheckCircle2 } from 'lucide-react'; 
 import { FaTrash, FaPlus } from 'react-icons/fa'; 
 import { useSettings } from '../context/SettingsContext';
 import { SEARCH_ENGINES, BACKGROUND_FILTERS } from '../utils/constants';
@@ -15,8 +15,23 @@ interface SettingsPanelProps {
 export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
   const { t } = useTranslation();
   const { settings, updateSetting } = useSettings();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [history, setHistory] = useState<any[]>([]);
   const bg = settings.background;
+
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
+
+  // 辅助函数：显示通知并在 3 秒后自动消失
+  const showNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({ message, type });
+    // 如果是错误提示，3秒后自动消失；如果是成功，稍后会刷新页面，所以消不消失无所谓
+    if (type === 'error') {
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -45,6 +60,54 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
     if (bg.activeLocalId === id) {
       updateBg({ type: 'builtin', activeLocalId: '' });
     }
+  };
+
+  const handleExport = () => {
+    const dataStr = JSON.stringify(settings, null, 2);
+    
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `auratab_backup_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const jsonContent = event.target?.result as string;
+        const parsedSettings = JSON.parse(jsonContent);
+
+        if (!parsedSettings.theme || !parsedSettings.background) {
+          throw new Error("Invalid format");
+        }
+
+        localStorage.setItem('aura-settings', JSON.stringify(parsedSettings));
+
+        showNotification(t('settings.importSuccess') || "Success! Reloading...", 'success');
+        
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+
+      } catch (err) {
+        console.error(err);
+        showNotification(t('settings.importError') || "Invalid file format.", 'error');
+      }
+    };
+    reader.readAsText(file);
+    
+    e.target.value = '';
   };
 
   if (!isOpen) return null;
@@ -86,6 +149,18 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
           background-color: rgba(255, 255, 255, 0.3);
         }
       `}</style>
+
+      {notification && (
+          <div className={`absolute top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-2 rounded-full shadow-xl text-xs font-bold animate-in slide-in-from-top-2 fade-in duration-300
+            ${notification.type === 'success' 
+              ? 'bg-green-500/90 text-white shadow-green-500/20' 
+              : 'bg-red-500/90 text-white shadow-red-500/20'
+            }`}
+          >
+            {notification.type === 'success' ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
+            <span>{notification.message}</span>
+          </div>
+        )}
 
       <div 
         className="bg-slate-900/95 border border-white/10 w-full max-w-lg rounded-2xl shadow-2xl relative text-white max-h-[90vh] flex flex-col overflow-hidden"
@@ -338,6 +413,54 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                 </a>
               </div>
             </div>
+          </section>
+
+          <section>
+            <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">
+              {t('settings.backup') || "Data Backup"}
+            </h3>
+            
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex gap-4">
+              
+              {/* 导出按钮 */}
+              <button
+                onClick={handleExport}
+                className="flex-1 flex flex-col items-center justify-center gap-2 p-4 rounded-lg bg-black/20 border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all group"
+              >
+                <div className="p-2 rounded-full bg-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
+                  <Download size={20} />
+                </div>
+                <span className="text-xs font-medium text-white/80">
+                  {t('settings.export') || "Export Config"}
+                </span>
+              </button>
+
+              {/* 导入按钮 */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex-1 flex flex-col items-center justify-center gap-2 p-4 rounded-lg bg-black/20 border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all group"
+              >
+                <div className="p-2 rounded-full bg-green-500/20 text-green-400 group-hover:scale-110 transition-transform">
+                  <Upload size={20} />
+                </div>
+                <span className="text-xs font-medium text-white/80">
+                  {t('settings.import') || "Import Config"}
+                </span>
+                {/* 隐藏的 input */}
+                <input 
+                  type="file" 
+                  accept=".json" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  onChange={handleImport}
+                />
+              </button>
+
+            </div>
+            
+            <p className="mt-2 text-[10px] text-white/30 text-center">
+              * Note: Local images are not included in the backup.
+            </p>
           </section>
 
         </div>

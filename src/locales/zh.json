@@ -33,7 +33,12 @@
     "customUrl": "在此粘贴图片链接...",
     "placeholderKey": "在此粘贴 Key...",
     "placeholderHost": "在此粘贴 Host URL...",
-    "getKey": "获取免费 Key"
+    "getKey": "获取免费 Key",
+    "backup": "数据备份",
+    "export": "导出配置",
+    "import": "导入配置",
+    "importSuccess": "配置导入成功！即将刷新...",
+    "importError": "无效的配置文件。"
   },
   "quickLinks": {
     "add": "添加",

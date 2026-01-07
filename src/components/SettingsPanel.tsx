@@ -54,7 +54,6 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
-      {/* --- CSS 魔法区域 --- */}
       <style>{`
         /* 1. 设置滚动条整体宽度 */
         .custom-scrollbar::-webkit-scrollbar {

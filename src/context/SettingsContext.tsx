@@ -50,7 +50,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   ],
   background: {
     type: 'builtin',
-    customUrl: 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=1920&auto=format&fit=crop',
+    customUrl: 'https://api.mtyqx.cn/api/random.php?return=image',
     activeLocalId: '',
     blur: 0,
     brightness: 60,

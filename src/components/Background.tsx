@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSettings } from '../context/SettingsContext';
-import { bgDB } from '../utils/db'; // 导入我们之前写的 db.ts
+import { bgDB } from '../utils/db';
 
 export const Background = () => {
   const { settings } = useSettings();

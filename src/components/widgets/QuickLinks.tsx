@@ -22,7 +22,7 @@ import type { QuickLink } from '../../context/SettingsContext';
 import { Globe, MoreVertical, Edit2, Trash2 } from 'lucide-react'; // 新增图标
 import { useTranslation } from 'react-i18next'; // 引入 i18n
 
-// --- Favicon 组件 (保持不变) ---
+// --- Favicon 组件 ---
 const FaviconImage = ({ url, title, className }: { url: string, title: string, className?: string }) => {
   const domain = new URL(url).hostname;
   const sources = getIconSources(domain);
@@ -109,7 +109,6 @@ const SortableLink = ({ link, onEdit, onDelete }: SortableLinkProps) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMenuOpen]);
 
-  // ... handlePointerDown / handleClick 保持不变 ...
   const handlePointerDown = (e: React.PointerEvent) => {
     setStartPos({ x: e.clientX, y: e.clientY });
   };

@@ -189,7 +189,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
 
             <div className="mb-6">
               <div className="text-xs text-white/60 mb-3 font-medium">{t('settings.tint') || "Tint Filter"}</div>
-              <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+              <div className="flex gap-3 overflow-x-auto py-1 -mx-2 px-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                 {BACKGROUND_FILTERS.map((filter) => {
                   const isActive = (bg.maskColor || '#000000') === filter.color;
                   return (
@@ -316,7 +316,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                 value={settings.weatherApiHost}
                 onChange={(e) => updateSetting('weatherApiHost', e.target.value)}
                 placeholder={t('settings.placeholderHost') || "Paste your host URL here..."}
-                className="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none placeholder-white/20 font-mono tracking-wide"
+                className="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none placeholder-white/20 font-mono tracking-wide mb-1"
               />
               <input 
                 type="password"

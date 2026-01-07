@@ -19,20 +19,89 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { useSettings } from '../../context/SettingsContext';
 import type { QuickLink } from '../../context/SettingsContext';
-import { Globe, MoreVertical, Edit2, Trash2 } from 'lucide-react'; // 新增图标
-import { useTranslation } from 'react-i18next'; // 引入 i18n
+import { Globe, MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // --- Favicon 组件 ---
 const FaviconImage = ({ url, title, className }: { url: string, title: string, className?: string }) => {
   const domain = new URL(url).hostname;
-  const sources = getIconSources(domain);
-  const [sourceIndex, setSourceIndex] = useState(0);
-  const [isError, setIsError] = useState(false);
+  const cacheKey = `favicon_cache_${domain}`;
+  
+  // 图片源列表
+  const sources = [
+    `https://icons.duckduckgo.com/ip3/${domain}.ico`,
+    `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+  ];
 
-  const handleError = () => {
-    if (sourceIndex < sources.length - 1) {
-      setSourceIndex(prev => prev + 1);
-    } else {
+  const [imgSrc, setImgSrc] = useState<string>('');
+  const [isError, setIsError] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadIcon = async () => {
+      // 1. 尝试从本地缓存读取
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        setImgSrc(cached);
+        setLoading(false);
+        return;
+      }
+
+      // 2. 如果没有缓存，尝试轮询下载
+      for (const source of sources) {
+        if (!isMounted) return;
+        try {
+          // 发起请求获取图片数据
+          const response = await fetch(source);
+          if (!response.ok) continue;
+
+          // 转为 Blob
+          const blob = await response.blob();
+          
+          // 验证是否是有效图片
+          if (!blob.type.startsWith('image/')) continue;
+
+          // 转为 Base64
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+
+          // 存入缓存并显示
+          if (isMounted) {
+            // 简单处理：如果 Base64 太长（超过 100KB）就不存了，防止撑爆 localStorage
+            if (base64.length < 100 * 1024) {
+               localStorage.setItem(cacheKey, base64);
+            }
+            setImgSrc(base64);
+            setLoading(false);
+            return; // 成功找到一个，直接退出循环
+          }
+        } catch (e) {
+          // 抓取失败 (可能是 CORS 限制，或者网络问题)
+          // console.warn(`Failed to fetch icon from ${source}`, e);
+          continue;
+        }
+      }
+
+      if (isMounted) {
+        setImgSrc(sources[0]); // 默认用第一个源
+        setLoading(false);
+      }
+    };
+
+    loadIcon();
+
+    return () => { isMounted = false; };
+  }, [url, cacheKey]); // 依赖项
+
+  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = e.target as HTMLImageElement;
+    if (!target.src.startsWith('data:')) {
       setIsError(true);
     }
   };
@@ -45,20 +114,20 @@ const FaviconImage = ({ url, title, className }: { url: string, title: string, c
     );
   }
 
+  // 加载中显示一个透明占位或骨架屏
+  if (loading) {
+    return <div className={`${className} bg-white/5 animate-pulse rounded`} />;
+  }
+
   return (
     <img 
-      src={sources[sourceIndex]} 
+      src={imgSrc} 
       alt={title} 
       className={className}
-      onError={handleError}
+      onError={handleImgError}
     />
   );
 };
-
-const getIconSources = (domain: string) => [
-  `https://icons.duckduckgo.com/ip3/${domain}.ico`,
-  `https://www.google.com/s2/favicons?domain=${domain}&sz=64`
-];
 
 // --- 1. 子组件：可拖拽的单个链接 ---
 interface SortableLinkProps {

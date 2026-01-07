@@ -15,47 +15,33 @@ interface SettingsPanelProps {
 export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
   const { t } = useTranslation();
   const { settings, updateSetting } = useSettings();
-  const [history, setHistory] = useState<any[]>([]); // 存储从 IndexedDB 读出的列表
+  const [history, setHistory] = useState<any[]>([]);
   const bg = settings.background;
 
-  // 1. 初始化加载历史记录
   useEffect(() => {
     if (isOpen) {
       bgDB.getAll().then(setHistory);
     }
   }, [isOpen]);
 
-  // 辅助函数：更新背景设置
   const updateBg = (patch: Partial<typeof settings.background>) => {
     updateSetting('background', { ...bg, ...patch });
   };
 
-  // 2. 处理新上传
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
-    // 存入 IndexedDB
     const newRecord = await bgDB.add(file); 
-    
-    // 刷新列表
     const updatedHistory = await bgDB.getAll();
     setHistory(updatedHistory);
-    
-    // 自动应用新上传的图
     updateBg({ type: 'local', activeLocalId: newRecord.id });
   };
 
-  // 3. 删除记录
   const handleDelete = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation(); // 防止触发图片选择
+    e.stopPropagation();
     await bgDB.delete(id);
-    
-    // 刷新列表
     const updatedHistory = await bgDB.getAll();
     setHistory(updatedHistory);
-    
-    // 如果删掉的是当前正在用的图，切回默认 Bing
     if (bg.activeLocalId === id) {
       updateBg({ type: 'builtin', activeLocalId: '' });
     }
@@ -64,35 +50,51 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
   if (!isOpen) return null;
 
   return (
-    // 外层遮罩：点击空白处关闭
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
-
+      {/* --- CSS 魔法区域 --- */}
       <style>{`
+        /* 1. 设置滚动条整体宽度 */
         .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
+          width: 8px; /* 稍微宽一点，为了容纳透明边框 */
         }
+        
+        /* 2. 轨道背景完全透明 */
         .custom-scrollbar::-webkit-scrollbar-track {
           background: transparent;
+          margin-top: 4px;    /* 上下留白，防止顶头 */
+          margin-bottom: 4px; /* 防止触底 */
         }
+
+        /* 3. 滑块样式 */
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: rgba(255, 255, 255, 0.15);
-          border-radius: 10px;
+          background-color: transparent; /* 默认透明 */
+          border-radius: 20px;
+          border: 2px solid transparent; /* 透明边框 */
+          background-clip: content-box;  /* 让背景色只在内容区显示，从而利用 border 制造内缩效果 */
+          transition: background-color 0.3s;
         }
+
+        /* 4. 只有鼠标悬浮在容器上时，才显示滑块 */
+        .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+          background-color: rgba(255, 255, 255, 0.15); /* 淡淡的白色 */
+        }
+
+        /* 5. 鼠标按住滑块时加深颜色 */
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background-color: rgba(255, 255, 255, 0.3);
         }
       `}</style>
-      {/* 面板主体：阻止点击冒泡 */}
+
       <div 
-        className="bg-slate-900/95 border border-white/10 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative text-white max-h-[90vh] overflow-y-auto custom-scrollbar"
+        className="bg-slate-900/95 border border-white/10 w-full max-w-lg rounded-2xl shadow-2xl relative text-white max-h-[90vh] flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         
         {/* --- Header --- */}
-        <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+        <div className="flex-none flex justify-between items-center px-6 py-5 border-b border-white/10 bg-slate-900/50 backdrop-blur-md z-10">
           <h2 className="text-xl font-bold tracking-tight">{t('settings.title') || "Settings"}</h2>
           <button 
             onClick={onClose} 
@@ -102,13 +104,13 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
           </button>
         </div>
 
-        <div className="space-y-8">
+        {/* --- Scrollable Content (独立滚动区域) --- */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
           
           {/* --- 背景设置区域 --- */}
           <section>
             <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">{t('settings.background') || "Background Source"}</h3>
             
-            {/* 1. 来源切换 Tab */}
             <div className="flex gap-2 mb-6">
               {['builtin', 'custom', 'local'].map((tt) => (
                 <button 
@@ -123,7 +125,6 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
               ))}
             </div>
 
-            {/* 2. Custom URL 输入框 */}
             {bg.type === 'custom' && (
               <div className="mb-4 animate-fade-in">
                 <input 
@@ -136,12 +137,9 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
               </div>
             )}
 
-            {/* 3. Local Gallery (历史记录) */}
             {bg.type === 'local' && (
               <div className="space-y-4 mb-6 animate-fade-in">
                 <div className="grid grid-cols-4 gap-3">
-                  
-                  {/* 上传按钮 */}
                   <button 
                     onClick={() => document.getElementById('bg-upload')?.click()}
                     className="aspect-square rounded-lg border-2 border-dashed border-white/20 flex flex-col items-center justify-center gap-1 hover:border-blue-500 hover:text-blue-500 hover:bg-white/5 transition-colors text-white/40"
@@ -152,7 +150,6 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                     <input id="bg-upload" type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
                   </button>
 
-                  {/* 历史图片列表 */}
                   {history.map((item) => (
                     <div 
                       key={item.id}
@@ -161,16 +158,12 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                         bg.activeLocalId === item.id ? 'border-blue-500 shadow-blue-500/20 shadow-lg' : 'border-transparent hover:border-white/30'
                       }`}
                     >
-                      {/* 图片预览 */}
                       <img 
                         src={URL.createObjectURL(item.file)} 
                         alt="bg-preview"
                         className="w-full h-full object-cover"
-                        // 关键：图片加载后释放 Blob URL，防止内存泄漏
                         onLoad={(e) => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
                       />
-                      
-                      {/* 选中指示器 */}
                       {bg.activeLocalId === item.id && (
                         <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
                           <div className="bg-blue-500 rounded-full p-1 shadow-lg">
@@ -178,8 +171,6 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                           </div>
                         </div>
                       )}
-
-                      {/* 删除按钮 (悬浮显示) */}
                       <button 
                         onClick={(e) => handleDelete(item.id, e)}
                         className="absolute top-1 right-1 p-1.5 bg-red-500/90 hover:bg-red-600 rounded-md opacity-0 group-hover:opacity-100 transition-all transform scale-90 group-hover:scale-100 shadow-sm"
@@ -196,7 +187,6 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
               </div>
             )}
 
-            {/* 4. 滤镜选择 (Tint Filter) */}
             <div className="mb-6">
               <div className="text-xs text-white/60 mb-3 font-medium">{t('settings.tint') || "Tint Filter"}</div>
               <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
@@ -210,7 +200,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                         isActive ? 'border-white scale-110' : 'border-white/10'
                       }`}
                       style={{ backgroundColor: filter.color }}
-                      title={t(`filters.${filter.id}`) || filter.name} // 使用国际化文本 --- IGNORE ---
+                      title={t(`filters.${filter.id}`) || filter.name}
                     >
                       {isActive && (
                          <span className="absolute inset-0 flex items-center justify-center text-white drop-shadow-md">
@@ -223,7 +213,6 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
               </div>
             </div>
 
-            {/* 5. 模糊与亮度滑块 */}
             <div className="space-y-4 p-4 bg-white/5 rounded-xl border border-white/5">
               <div className="flex items-center gap-4">
                 <span className="text-xs text-white/60 w-16 font-medium">{t('settings.blur') || "Blur"}</span>
@@ -330,7 +319,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                 className="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none placeholder-white/20 font-mono tracking-wide"
               />
               <input 
-                type="password" // 使用密码框保护隐私
+                type="password"
                 value={settings.weatherApiKey}
                 onChange={(e) => updateSetting('weatherApiKey', e.target.value)}
                 placeholder={t('settings.placeholderKey') || "Paste your API key here..."}

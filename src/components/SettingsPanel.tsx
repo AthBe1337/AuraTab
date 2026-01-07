@@ -69,9 +69,25 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
+
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: rgba(255, 255, 255, 0.15);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(255, 255, 255, 0.3);
+        }
+      `}</style>
       {/* 面板主体：阻止点击冒泡 */}
       <div 
-        className="bg-slate-900/95 border border-white/10 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative text-white max-h-[90vh] overflow-y-auto"
+        className="bg-slate-900/95 border border-white/10 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative text-white max-h-[90vh] overflow-y-auto custom-scrollbar"
         onClick={e => e.stopPropagation()}
       >
         

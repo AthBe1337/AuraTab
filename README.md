@@ -92,7 +92,7 @@ npm run dev
 ```
 
 
-访问 `http://localhost:5173` 进行预览。
+访问 `http://localhost:3000/` 进行预览。
 *注意：在普通网页模式下，部分跨域请求（如获取 Favicon）可能会被浏览器拦截，这是正常现象。构建为扩展后将由 `manifest.json` 权限解决。*
 
 ---

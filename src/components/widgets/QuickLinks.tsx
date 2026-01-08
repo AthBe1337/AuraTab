@@ -29,8 +29,8 @@ const FaviconImage = ({ url, title, className }: { url: string, title: string, c
   
   // 图片源列表
   const sources = [
-    `https://icons.duckduckgo.com/ip3/${domain}.ico`,
-    `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+    `/icon-proxy/ddg/${domain}.ico`,
+    `/icon-proxy/google?domain=${domain}&sz=64`,
   ];
 
   const [imgSrc, setImgSrc] = useState<string>('');

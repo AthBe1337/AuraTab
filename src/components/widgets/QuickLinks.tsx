@@ -30,7 +30,6 @@ const FaviconImage = ({ url, title, className }: { url: string, title: string, c
   // 图片源列表
   const sources = [
     `/icon-proxy/ddg/${domain}.ico`,
-    `/icon-proxy/google?domain=${domain}&sz=64`,
   ];
 
   const [imgSrc, setImgSrc] = useState<string>('');

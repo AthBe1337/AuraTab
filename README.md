@@ -1,73 +1,131 @@
-# React + TypeScript + Vite
+# ✨ AuraTab - 极简主义新标签页
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**AuraTab** 是一个基于 React 和 Vite 构建的现代化 Chrome 新标签页扩展。它旨在提供极致的视觉体验、流畅的交互和高度的个性化设置，同时保持轻量级和高性能。
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🖼️ 预览
 
-## React Compiler
+![](https://imagehost.athbe.cn/wp-content/uploads/2026/01/1767911240-pintu-fulicat.com-1767911128606-scaled.jpg)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🚀 功能特性
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🎨 极致视觉与交互
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+* **深色玻璃拟态 UI**：全界面采用高斯模糊与半透明设计，极具现代感。
+* **流畅动画**：所有交互均包含平滑的过渡动画。
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 🖼️ 壁纸管理系统
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+* **多源支持**：
+* **Bing 每日壁纸**：自动获取当日必应美图。
+* **自定义 URL**：支持任意网络图片链接。
+* **本地上传**：支持上传本地图片。
+
+
+* **高级控制**：
+* **滤镜系统**：支持自定义模糊度（Blur）、亮度（Dim）和遮罩色调（Tint）。
+* **智能缓存**：自定义 API 壁纸自动缓存，避免重复请求。
+
+
+
+### ⚡ 高效生产力
+
+* **快捷链接 (Quick Links)**：
+* 基于 `@dnd-kit` 的平滑**拖拽排序**。
+* 支持添加、编辑、删除。
+* **智能图标缓存**：自动获取网站 Favicon 并转为 Base64 本地缓存，断网可用。
+
+
+* **多功能搜索栏**：
+* 内置 Google, Bing, DuckDuckGo, Baidu 等多引擎切换。
+
+* **实时天气**：
+* 集成 **和风天气 (QWeather)** API。
+* 自动定位，支持全球天气数据。
+
+
+
+### ⚙️ 系统与设置
+
+* **多语言支持 (i18n)**：完整支持 英文 / 中文 切换，自动检测浏览器语言。
+* **数据备份**：支持导出配置为 JSON 文件，以及从文件恢复配置。
+* **隐私优先**：所有数据（图片、链接、配置）均存储在本地浏览器中（LocalStorage & IndexedDB），不上传任何服务器。
+
+---
+
+## 🛠️ 技术栈
+
+* **核心框架**: [React 18](https://react.dev/) + [Vite](https://vitejs.dev/)
+* **语言**: [TypeScript](https://www.typescriptlang.org/)
+* **样式**: [Tailwind CSS](https://tailwindcss.com/)
+* **拖拽库**: [@dnd-kit](https://dndkit.com/)
+* **状态/存储**: React Context API + IndexedDB (idb)
+* **国际化**: [react-i18next](https://react.i18next.com/)
+* **图标**: [Lucide React](https://lucide.dev/) & React Icons
+
+---
+
+## 💻 本地开发指南
+
+1. **克隆项目**
+```bash
+git clone https://github.com/AthBe1337/AuraTab.git
+cd auratab
+
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+2. **安装依赖**
+```bash
+npm install
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+
+
+3. **启动开发服务器**
+```bash
+npm run dev
+
+```
+
+
+访问 `http://localhost:5173` 进行预览。
+*注意：在普通网页模式下，部分跨域请求（如获取 Favicon）可能会被浏览器拦截，这是正常现象。构建为扩展后将由 `manifest.json` 权限解决。*
+
+---
+
+## 📦 构建与安装 (Chrome 扩展)
+
+1. **构建项目**
+```bash
+npm run build
+
+```
+
+
+构建完成后，会在根目录下生成 `dist` 文件夹。
+2. **加载到 Chrome**
+1. 在 Chrome 地址栏输入 `chrome://extensions/`。
+2. 开启右上角的 **"开发者模式" (Developer mode)**。
+3. 点击左上角的 **"加载已解压的扩展程序" (Load unpacked)**。
+4. 选择项目根目录下的 `dist` 文件夹。
+
+
+3. **完成**
+打开一个新的标签页，即可看到 AuraTab。
+
+---
+
+## 🔑 配置说明
+
+### 天气 API Key
+
+本项目默认使用 **和风天气 (QWeather)** API。
+为了正常使用天气功能，建议：
+
+1. 前往 [和风天气控制台](https://console.qweather.com/) 注册账号。
+2. 创建一个新的项目，获取 **Web API Key** 以及 **host URL**。
+3. 在 AuraTab 的设置面板 -> Weather Service 中填入你的 Key。

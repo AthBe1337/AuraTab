@@ -107,6 +107,7 @@ npm run build
 
 
 构建完成后，会在根目录下生成 `dist` 文件夹。
+
 2. **加载到 Chrome**
 1. 在 Chrome 地址栏输入 `chrome://extensions/`。
 2. 开启右上角的 **"开发者模式" (Developer mode)**。

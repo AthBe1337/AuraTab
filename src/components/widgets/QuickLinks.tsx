@@ -29,7 +29,7 @@ const FaviconImage = ({ url, title, className }: { url: string, title: string, c
   
   // 图片源列表
   const sources = [
-    `/icon-proxy/ddg/${domain}.ico`,
+    `/api/favicon/${domain}.ico`,
   ];
 
   const [imgSrc, setImgSrc] = useState<string>('');

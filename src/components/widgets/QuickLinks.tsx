@@ -31,7 +31,7 @@ const FaviconImage = ({ url, title, className }: { url: string, title: string, c
   
   // 图片源列表
   const sources = [
-    `${API_BASE}/favicon/${domain}.ico`,
+    `${API_BASE}/api/favicon/${domain}.ico`,
   ];
 
   const [imgSrc, setImgSrc] = useState<string>('');

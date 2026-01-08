@@ -22,6 +22,8 @@ import type { QuickLink } from '../../context/SettingsContext';
 import { Globe, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
 // --- Favicon 组件 ---
 const FaviconImage = ({ url, title, className }: { url: string, title: string, className?: string }) => {
   const domain = new URL(url).hostname;
@@ -29,7 +31,7 @@ const FaviconImage = ({ url, title, className }: { url: string, title: string, c
   
   // 图片源列表
   const sources = [
-    `/api/favicon/${domain}.ico`,
+    `${API_BASE}/favicon/${domain}.ico`,
   ];
 
   const [imgSrc, setImgSrc] = useState<string>('');

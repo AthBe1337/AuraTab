@@ -39,7 +39,9 @@
     "import": "Import Config",
     "importSuccess": "Settings imported successfully! Reloading...",
     "importError": "Invalid settings file.",
-    "notice_backup": "* Note: Local images are not included in the backup."
+    "notice_backup": "* Note: Local images are not included in the backup.",
+    "openSource": "Open Source Repository",
+    "contact": "Contact Developer"
   },
   "quickLinks": {
     "add": "Add",

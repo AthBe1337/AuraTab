@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Check, Download, Upload, AlertCircle, CheckCircle2 } from 'lucide-react'; 
-import { FaTrash, FaPlus } from 'react-icons/fa'; 
+import { X, Check, Download, Upload, AlertCircle, CheckCircle2, ExternalLink, Mail } from 'lucide-react'; 
+import { FaTrash, FaPlus, FaGithub } from 'react-icons/fa';
 import { useSettings } from '../context/SettingsContext';
 import { SEARCH_ENGINES, BACKGROUND_FILTERS } from '../utils/constants';
 import { bgDB } from '../utils/db';
-import { ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface SettingsPanelProps {
@@ -462,6 +461,43 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
               {t('settings.notice_backup') || "* Note: Local images are not included in the backup."}
             </p>
           </section>
+
+          {/* 关于/联系 */}
+          <div className="pt-6 pb-2 border-t border-white/10 flex flex-col items-center justify-center gap-4">
+            <div className="flex gap-6">
+              {/* 开源地址 */}
+              <a
+                href="https://github.com/AthBe1337/AuraTab" 
+                target="_blank"
+                rel="noreferrer"
+                className="group flex items-center gap-2 text-white/40 hover:text-white transition-colors"
+              >
+                <div className="p-1.5 rounded-full bg-white/5 group-hover:bg-white/20 transition-colors">
+                  <FaGithub size={16} />
+                </div>
+                <span className="text-xs font-medium">{t('settings.openSource') || "Open Source"}</span>
+              </a>
+
+              {/* 联系方式 */}
+              <a
+                href="mailto:athbe1337@gmail.com" 
+                className="group flex items-center gap-2 text-white/40 hover:text-white transition-colors"
+              >
+                <div className="p-1.5 rounded-full bg-white/5 group-hover:bg-white/20 transition-colors">
+                  <Mail size={16} />
+                </div>
+                <span className="text-xs font-medium">{t('settings.contact') || "Contact"}</span>
+              </a>
+            </div>
+            
+            <div className="flex items-center justify-center text-[10px] text-white/20 font-mono mt-2">
+              <span>AuraTab</span>
+              <span className="mx-2 opacity-30">|</span>
+              <span className="select-all hover:text-white/50 transition-colors cursor-default" title="Git Hash">
+                {typeof __COMMIT_HASH__ !== 'undefined' ? __COMMIT_HASH__ : 'Dev'}
+              </span>
+            </div>
+          </div>
 
         </div>
       </div>

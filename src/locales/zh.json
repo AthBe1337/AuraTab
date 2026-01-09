@@ -39,7 +39,9 @@
     "import": "导入配置",
     "importSuccess": "配置导入成功！即将刷新...",
     "importError": "无效的配置文件。",
-    "notice_backup": "* 注意：本地图片不包含在备份中。"
+    "notice_backup": "* 注意：本地图片不包含在备份中。",
+    "openSource": "开源仓库",
+    "contact": "联系作者"
   },
   "quickLinks": {
     "add": "添加",

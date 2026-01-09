@@ -26,6 +26,7 @@
       "bing": "Bing",
       "duckduckgo": "DuckDuckGo",
       "baidu": "Baidu",
+      "search_common": "Search the web...",
     "weather": "Weather Service",
     "setupWeatherKey": "Please set up your weather API key to display weather information.",
     "weatherProvider": "Data provided by QWeather (HeFeng)",

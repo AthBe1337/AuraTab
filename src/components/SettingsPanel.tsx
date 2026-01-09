@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Check, Download, Upload, AlertCircle, CheckCircle2 } from 'lucide-react'; 
 import { FaTrash, FaPlus } from 'react-icons/fa'; 
 import { useSettings } from '../context/SettingsContext';
-import { SEARCH_ENGINES, BACKGROUND_FILTERS } from '../utils/constants';
+import { BACKGROUND_FILTERS } from '../utils/constants';
 import { bgDB } from '../utils/db';
 import { ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -358,7 +358,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
           </section>
 
           {/* --- 搜索引擎 --- */}
-          <section>
+          {/* <section>
             <h3 className="text-xs uppercase text-white/50 font-bold mb-4 tracking-wider">{t('settings.search') || "Default Search"}</h3>
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(SEARCH_ENGINES).map(([key, engine]) => (
@@ -376,7 +376,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
                 </button>
               ))}
             </div>
-          </section>
+          </section> */}
 
           {/* --- 天气服务设置 --- */}
           <section>

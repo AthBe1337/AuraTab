@@ -26,6 +26,7 @@
       "bing": "Bing",
       "duckduckgo": "DuckDuckGo",
       "baidu": "百度",
+      "search_common": "在网络中搜索...",
     "weather": "天气服务",
     "setupWeatherKey": "请设置您的天气 API 密钥以显示天气信息。",
     "weatherProvider": "数据由和风天气提供",

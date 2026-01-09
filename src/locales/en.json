@@ -2,7 +2,7 @@
   "weather": {
     "unknown": "Unknown",
     "setup": "Setup Weather Key",
-    "locDenied": "Location Denied"
+    "locationDenied": "Location Access Denied"
   },
   "settings": {
     "title": "Settings",
@@ -27,6 +27,7 @@
       "duckduckgo": "DuckDuckGo",
       "baidu": "Baidu",
     "weather": "Weather Service",
+    "setupWeatherKey": "Please set up your weather API key to display weather information.",
     "weatherProvider": "Data provided by QWeather (HeFeng)",
     "upload": "Upload",
     "noImages": "No images uploaded yet.",

@@ -2,7 +2,7 @@
   "weather": {
     "unknown": "未知",
     "setup": "配置天气密钥",
-    "locDenied": "定位被拒绝"
+    "locationDenied": "定位被拒绝"
   },
   "settings": {
     "title": "设置",
@@ -27,6 +27,7 @@
       "duckduckgo": "DuckDuckGo",
       "baidu": "百度",
     "weather": "天气服务",
+    "setupWeatherKey": "请设置您的天气 API 密钥以显示天气信息。",
     "weatherProvider": "数据由和风天气提供",
     "upload": "上传",
     "noImages": "尚未上传任何图片。",

@@ -118,7 +118,7 @@ export const WeatherWidget = () => {
         
         {/* Hover 提示文字 */}
         <div className="absolute top-12 right-0 w-max px-3 py-1 bg-black/80 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-white/10 shadow-xl">
-          {error === 'No API Key' ? t('settings.setupWeatherKey') || 'Setup Weather Key' : (error === 'Loc Denied' ? t('weather.locationDenied') || 'Location Access Denied' : error)}
+          {error === 'No API Key' ? t('settings.setupWeatherKey') || 'Please set up your weather API key to display weather information.' : (error === 'Loc Denied' ? t('weather.locationDenied') || 'Location Access Denied' : error)}
         </div>
       </div>
     );

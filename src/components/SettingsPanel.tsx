@@ -459,7 +459,7 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
             </div>
             
             <p className="mt-2 text-[10px] text-white/30 text-center">
-              * Note: Local images are not included in the backup.
+              {t('settings.notice_backup') || "* Note: Local images are not included in the backup."}
             </p>
           </section>
 

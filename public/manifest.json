@@ -17,8 +17,8 @@
     "128": "favicon.ico"
   },
   "permissions": [
-    "storage", 
-    "geolocation"
+    "geolocation",
+    "search"
   ],
   "host_permissions": [
     "https://icons.duckduckgo.com/ip3/*.ico", 

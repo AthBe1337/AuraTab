@@ -38,7 +38,8 @@
     "export": "Export Config",
     "import": "Import Config",
     "importSuccess": "Settings imported successfully! Reloading...",
-    "importError": "Invalid settings file."
+    "importError": "Invalid settings file.",
+    "notice_backup": "* Note: Local images are not included in the backup."
   },
   "quickLinks": {
     "add": "Add",
